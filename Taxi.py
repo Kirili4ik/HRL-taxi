@@ -7,9 +7,9 @@ class Agent:
 
     def __init__(self, env, alpha, gamma):
         self.env = env
-        nA = env.action_space.n + 4         # +4
+        nA = env.action_space.n + 4         # +4 ?
         nS = env.observation_space.n
-        self.V = np.zeros((nA, nS))         # V for primitive and C for others, dicts ?
+        self.V = np.zeros((nA, nS))        # V for primitive and C for others, dicts?
         self.C = np.zeros((nA, nS, nA))
         # s, n, e, w, pickup, dropoff, goto, put, get, root
         # 0, 1, 2, 3, 4,      5,       6,    7,   8,   9
@@ -29,7 +29,7 @@ class Agent:
         self.gamma = gamma
         self.taken = False
         self.r_sum = 0
-        self.observ = copy.copy(self.env.s)
+        self.new_s = copy.copy(self.env.s)
 
 
     def is_terminal(self, a, done):
@@ -72,7 +72,7 @@ class Agent:
     def MAXQ_0(self, i, s):
         done = False
         if i <= 5:                                          # primitive action
-            self.observ, r, done, _ = copy.copy(self.env.step(i))
+            self.new_s, r, done, _ = copy.copy(self.env.step(i))
             self.r_sum += r
             self.V[i, s] += self.alpha * (r - self.V[i, s])
             return 1
@@ -81,17 +81,19 @@ class Agent:
             while not self.is_terminal(i, done):
                 a = self.greed_act(i, s)
                 N = self.MAXQ_0(a, s)
-                self.V[i, self.observ] = self.evaluate(i, s)
-                self.C[i, s, a] += self.alpha * (self.gamma ** N * self.V[i, self.observ] - self.C[i, s, a])
+                # s' = new_s
+                self.V[i, self.new_s] = self.evaluate(i, s)
+                self.C[i, s, a] += self.alpha * (self.gamma ** N * self.V[i, self.new_s] - self.C[i, s, a])
                 count += N
-                s = self.observ
+                s = self.new_s
             return count
 
     def reset(self, new_env):
         self.env = new_env
 
 ### MAIN PROGRAM
-# Still infinite cycle
+#still infinite loop - greed_act probably doesn't work properly
+
 alpha = 0.1
 gamma = 0.999
 env = gym.make('Taxi-v2').env
