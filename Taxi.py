@@ -32,28 +32,14 @@ class Agent:
     def is_terminal(self, a, done):
         RGBY = [(0, 0), (0, 4), (4, 0), (4, 3)]
         taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))      # env.s == state now
-        # if done or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) \
-        #        or (a == 6 and (taxirow, taxicol) == RGBY[passidx] and (passidx < 4 or (taxirow, taxicol) == RGBY[destidx])):
-        # goto AND taxiloc == passloc AND (not in car OR taxiloc == destloc)
-        
-                        # Terminal actions ?????
-        
-        if done:
+        if a == 9 or a == 7:
+            return done
+        elif a == 8:
+            return passidx >= 4
+        elif a == 6:
+            return (passidx < 4 and (taxirow, taxicol) == RGBY[passidx] or passidx >= 4 and (taxirow, taxicol) == RGBY[destidx]):
+        elif a <=5:
             return True
-        elif a == 8 and passidx >= 4:
-            return True
-        elif a == 7 and passidx < 4:
-            return True
-        elif a == 6 and (passidx < 4 and (taxirow, taxicol) == RGBY[passidx] or passidx >= 4 and (taxirow, taxicol) == RGBY[destidx]):
-            return True
-        elif a == 5 and (passidx < 4 or passidx >= 4 and (taxirow, taxicol) != RGBY[destidx]):
-            return True
-        elif a == 4 and (passidx >= 4 or passidx < 4 and (taxirow, taxicol) != RGBY[passidx]):
-            return True
-        elif a < 4 and (taxirow, taxicol) == RGBY[destidx]:
-            return True
-        else:
-            return False
 
     def evaluate(self, i, s):
         if i <= 5:               # primitive action
