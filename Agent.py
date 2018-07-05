@@ -26,7 +26,7 @@ class Agent(env, alpha, gamma):
 
     def is_terminal(self, a, done):     # state in self
         taxirow, taxicol, passidx = list(self.env.decode(self.env.s))
-        if done or a == 9 or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) or (a == 6 and ):
+        if done or a == 9 or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) or (a == 6 and ):  # ???
             return True
         else:
             return False
