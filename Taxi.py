@@ -1,12 +1,13 @@
 import numpy as np
 import gym
+import copy
 
 
 class Agent:
 
     def __init__(self, env, alpha, gamma):
         self.env = env
-        nA = env.action_space.n + 4         # +4 ?
+        nA = env.action_space.n + 4         # +4
         nS = env.observation_space.n
         self.V = np.zeros((nA, nS))         # V for primitive and C for others, dicts ?
         self.C = np.zeros((nA, nS, nA))
@@ -28,17 +29,20 @@ class Agent:
         self.gamma = gamma
         self.taken = False
         self.r_sum = 0
+        self.observ = copy.copy(self.env.s)
+
 
     def is_terminal(self, a, done):
         RGBY = [(0, 0), (0, 4), (4, 0), (4, 3)]
-        taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))      # env.s == state now
+        taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))  # env.s == state now
         if a == 9 or a == 7:
             return done
         elif a == 8:
             return passidx >= 4
         elif a == 6:
-            return (passidx < 4 and (taxirow, taxicol) == RGBY[passidx] or passidx >= 4 and (taxirow, taxicol) == RGBY[destidx]):
-        elif a <=5:
+            return (passidx < 4 and (taxirow, taxicol) == RGBY[passidx] or
+                    passidx >= 4 and (taxirow, taxicol) == RGBY[destidx])
+        elif a <= 5:
             return True
 
     def evaluate(self, i, s):
@@ -66,10 +70,9 @@ class Agent:
         return np.random.choice(possible_a, p=policy)  # choose from children with probabilities for explor/exploit prob
 
     def MAXQ_0(self, i, s):
-        observ = self.env.s
         done = False
         if i <= 5:                                          # primitive action
-            observ, r, done, _ = self.env.step(i)
+            self.observ, r, done, _ = copy.copy(self.env.step(i))
             self.r_sum += r
             self.V[i, s] += self.alpha * (r - self.V[i, s])
             return 1
@@ -78,19 +81,17 @@ class Agent:
             while not self.is_terminal(i, done):
                 a = self.greed_act(i, s)
                 N = self.MAXQ_0(a, s)
-                self.V[i, observ] = self.evaluate(i, s)
-                self.C[i, s, a] += self.alpha * (self.gamma ** N * self.V[i, observ] - self.C[i, s, a])
+                self.V[i, self.observ] = self.evaluate(i, s)
+                self.C[i, s, a] += self.alpha * (self.gamma ** N * self.V[i, self.observ] - self.C[i, s, a])
                 count += N
-                s = observ
+                s = self.observ
             return count
 
     def reset(self, new_env):
         self.env = new_env
 
-        
 ### MAIN PROGRAM
-#For now: infinite loop :(
-
+# Still infinite cycle
 alpha = 0.1
 gamma = 0.999
 env = gym.make('Taxi-v2').env
