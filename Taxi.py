@@ -32,11 +32,11 @@ class Agent:
     def is_terminal(self, a, done):
         RGBY = [(0, 0), (0, 4), (4, 0), (4, 3)]
         taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))      # env.s == state now
-        #if done or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) \
+        # if done or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) \
         #        or (a == 6 and (taxirow, taxicol) == RGBY[passidx] and (passidx < 4 or (taxirow, taxicol) == RGBY[destidx])):
         # goto AND taxiloc == passloc AND (not in car OR taxiloc == destloc)
         
-        #Terminal actions (
+                        # Terminal actions ?????
         
         if done:
             return True
