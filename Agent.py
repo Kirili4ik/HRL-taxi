@@ -16,7 +16,7 @@ class Agent:
             set(),  # 0 s
             set(),  # 1 n
             set(),  # 2 e
-            set(),  # 3 w               self.env.s == state exm????
+            set(),  # 3 w
             set(),  # 4 pickup
             set(),  # 5 dropoff
             {0, 1, 2, 3},  # 6 goto -> s, n, e, w
@@ -29,9 +29,9 @@ class Agent:
         self.taken = False
         self.r_sum = 0
 
-    def is_terminal(self, a, done):     # state in self
+    def is_terminal(self, a, done):
         RGBY = [(0, 0), (0, 4), (4, 0), (4, 3)]
-        taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))
+        taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))      # env.s == state now
         #if done or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) \
         #        or (a == 6 and (taxirow, taxicol) == RGBY[passidx] and (passidx < 4 or (taxirow, taxicol) == RGBY[destidx])):
         # goto AND taxiloc == passloc AND (not in car OR taxiloc == destloc)
@@ -80,7 +80,7 @@ class Agent:
         return np.random.choice(possible_a, p=policy)  # choose from children with probabilities for explor/exploit prob
 
     def MAXQ_0(self, i, s):
-        observ = self.env.observation_space.sample()
+        observ = self.env.s
         done = False
         if i <= 5:                                          # primitive action
             observ, r, done, _ = self.env.step(i)
@@ -101,6 +101,7 @@ class Agent:
     def reset(self, new_env):
         self.env = new_env
 
+        
 ### MAIN PROGRAM
 #For now: infinite loop :(
 
@@ -113,4 +114,4 @@ for j in range(episodes):
     env.reset()
     taxi.reset(env)
     taxi.MAXQ_0(9, env.s)
-    print(taxi.r_sum)
+    print(taxi.r_sum, end=" ")
