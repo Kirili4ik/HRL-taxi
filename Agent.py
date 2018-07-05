@@ -6,9 +6,9 @@ class Agent:
 
     def __init__(self, env, alpha, gamma):
         self.env = env
-        nA = env.action_space.n + 4         # ??????
+        nA = env.action_space.n + 4         # +4 ?
         nS = env.observation_space.n
-        self.V = np.zeros((nA, nS))         # V for primitive and C for others ???  Q = np.zeros((nA, nS, nA)) ???
+        self.V = np.zeros((nA, nS))         # V for primitive and C for others, dicts ?
         self.C = np.zeros((nA, nS, nA))
         # s, n, e, w, pickup, dropoff, goto, put, get, root
         # 0, 1, 2, 3, 4,      5,       6,    7,   8,   9
@@ -34,8 +34,10 @@ class Agent:
         taxirow, taxicol, passidx, destidx = list(self.env.decode(self.env.s))
         #if done or (a == 8 and passidx >= 4) or (a == 7 and passidx < 4) \
         #        or (a == 6 and (taxirow, taxicol) == RGBY[passidx] and (passidx < 4 or (taxirow, taxicol) == RGBY[destidx])):
-                # for a=9: return done   # goto AND taxiloc == passloc AND (not in car OR taxiloc == destloc)
-
+        # goto AND taxiloc == passloc AND (not in car OR taxiloc == destloc)
+        
+        #Terminal actions (
+        
         if done:
             return True
         elif a == 8 and passidx >= 4:
@@ -99,6 +101,8 @@ class Agent:
     def reset(self, new_env):
         self.env = new_env
 
+### MAIN PROGRAM
+#For now: infinite loop :(
 
 alpha = 0.1
 gamma = 0.999
