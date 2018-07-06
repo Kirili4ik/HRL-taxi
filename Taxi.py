@@ -82,7 +82,7 @@ class Agent:
                 a = self.greed_act(i, s)
                 N = self.MAXQ_0(a, s)
                 # s' = new_s
-                self.V[i, self.new_s] = self.evaluate(i, s)
+                self.V[i, self.new_s] = self.evaluate(i, self.new_s)
                 self.C[i, s, a] += self.alpha * (self.gamma ** N * self.V[i, self.new_s] - self.C[i, s, a])
                 count += N
                 s = self.new_s
