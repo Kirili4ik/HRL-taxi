@@ -2,6 +2,7 @@ import numpy as np
 import gym
 import copy
 import matplotlib.pyplot as plt
+import seaborn as sns
 import time
 
 
@@ -9,8 +10,8 @@ class Agent:
     def __init__(self, env, alpha, gamma):
         self.env = env
         
-        hier_act_sp = 2 + 1 + 1 + 1   # goto * 2 + put + get + root
-        nA = env.action_space.n + hier_act_sp       
+        not_pr_acts = 2 + 1 + 1 + 1   # gotoS,D + put + get + root (non primitive actions)
+        nA = env.action_space.n + not_pr_acts       
         nS = env.observation_space.n
         self.V = np.zeros((nA, nS))
         self.C = np.zeros((nA, nS, nA))
@@ -49,13 +50,11 @@ class Agent:
         self.done = False
         self.num_of_ac = 0
 
-        
     def is_primitive(self, act):
-        if (act <= 5):
+        if act <= 5:
             return True
         else:
             return False
-    
     
     def is_terminal(self, a, done):
         RGBY = [(0, 0), (0, 4), (4, 0), (4, 3)]
@@ -142,7 +141,7 @@ alpha = 0.2
 gamma = 1
 env = gym.make('Taxi-v3').env
 taxi = Agent(env, alpha, gamma)
-episodes = 10001
+episodes = 5001
 sum_list = []
 for j in range(episodes):
     taxi.reset()
@@ -150,5 +149,11 @@ for j in range(episodes):
     sum_list.append(taxi.r_sum)
     if (j % 1000 == 0):
         print('already made', j, 'episodes')
+
+sns.set(style='darkgrid')
+sns.set(font_scale=1.5)
+plt.figure(figsize=(15, 7.5))
 plt.plot(sum_list)
+plt.xlabel('episode num')
+plt.ylabel('points')
 plt.show()
